@@ -23,14 +23,14 @@ void threadFunction(pr::Banque & banque) {
 const int NB_THREAD = 10;
 int main () {
 	vector<thread> threads;
-	pr::Banque banque(10, 100);
+	pr::Banque banque(3, 100);
 	// TODO : creer des threads qui font ce qui est demandé
 	for(int i=0;i<NB_THREAD;i++){
 		threads.push_back(thread(threadFunction, ref(banque)));
 	}
 
 	thread t([&banque]() { 
-		if(banque.comptabiliser(1000)){
+		if(banque.comptabiliser(300)){
 			cout << "Bilan comptable correct" << endl;
 		};
 		});
