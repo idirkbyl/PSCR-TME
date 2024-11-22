@@ -11,9 +11,15 @@ using namespace pr;
 
 
 bool isFinished = false;
-
+std::vector<pid_t> vec(1000);
 void handler(int sig){
 	isFinished = true;
+}
+
+void handler2(int sig){
+	for(pid_t pid : vec){
+		kill(pid,SIGUSR1);
+	}
 }
 void producteur (Stack<char> * stack) {
 	char c ;
@@ -26,9 +32,11 @@ void consomateur (Stack<char> * stack) {
 	while (!isFinished) {
 		char c = stack->pop();
 		if(!c) return;
-		cout << c << flush ;
+		cout << c << endl ;
 	}
 }
+
+
 //Stack<char> * s
 int main (int argc, char** argv) {
 	// int fd= shm_open("/stack",O_RDWR|O_CREAT,0600);
@@ -57,7 +65,12 @@ int main (int argc, char** argv) {
 	struct sigaction sig;
 	memset(&sig, 0, sizeof(sig));
 	sig.sa_handler= &handler;
-	sigaction(SIGINT,&sig,NULL);
+	sigaction(SIGUSR1,&sig,NULL);
+
+	struct sigaction sig2;
+	memset(&sig2, 0, sizeof(sig2));
+	sig2.sa_handler= &handler2;
+	sigaction(SIGINT,&sig2,NULL);
 
 	
 
@@ -83,6 +96,7 @@ int main (int argc, char** argv) {
 		wait(0);
 	}
 	s->~Stack();
+	munmap(ptr,sizeof(Stack<char>));
 	return 0;
 }
 
