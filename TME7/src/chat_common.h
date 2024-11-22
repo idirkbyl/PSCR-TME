@@ -2,7 +2,6 @@
 #define H_CHAT_COMMON
 
 #define _XOPEN_SOURCE 700
-#define _REENTRANT
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +24,7 @@
 
 #define MAX_MESS 50
 #define MAX_USERS 10
-#define TAILLE_MESS 10
+#define TAILLE_MESS 1024
 
 struct message {
   long type;
@@ -41,5 +40,15 @@ struct myshm {
 };
 
 char *getName(char *name);
+
+
+void pushMessage(struct myshm *shm, long type, char *content){
+  sem_wait(&shm->sem);
+  shm->messages[shm->nb].type = type;
+  strcpy(shm->messages[shm->write].content, content);
+  shm->nb++;
+  sem_post(&shm->sem);
+}
+
 
 #endif
